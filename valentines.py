@@ -10,7 +10,7 @@ def get_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-# ---------- LOAD FILES FROM ROOT ----------
+# ---------- LOAD FILES (ROOT LEVEL) ----------
 bg_img = get_base64("background.jpg")
 bg_music = get_base64("background_music.mp3")
 yay_sound = get_base64("yay_sound.mp3")
@@ -67,16 +67,6 @@ page_style = f"""
 """
 st.markdown(page_style, unsafe_allow_html=True)
 
-# ---------- BACKGROUND MUSIC ----------
-st.markdown(
-    f"""
-    <audio autoplay loop>
-        <source src="data:audio/mp3;base64,{bg_music}" type="audio/mp3">
-    </audio>
-    """,
-    unsafe_allow_html=True
-)
-
 # ---------- FLOATING HEARTS ----------
 heart_html = "<div class='hearts'>"
 for _ in range(20):
@@ -93,7 +83,25 @@ if "stage" not in st.session_state:
 if "no_clicks" not in st.session_state:
     st.session_state.no_clicks = 0
 
+if "music_started" not in st.session_state:
+    st.session_state.music_started = False
+
+# ---------- BACKGROUND MUSIC BUTTON ----------
 st.markdown("<div class='centered'>", unsafe_allow_html=True)
+
+if not st.session_state.music_started:
+    if st.button("🎵 Tap to start the vibe"):
+        st.session_state.music_started = True
+
+if st.session_state.music_started:
+    st.markdown(
+        f"""
+        <audio autoplay loop>
+            <source src="data:audio/mp3;base64,{bg_music}" type="audio/mp3">
+        </audio>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ================= MAIN SCREEN =================
 if st.session_state.stage == "main":
@@ -126,7 +134,7 @@ if st.session_state.stage == "main":
         if st.button("No 🙈"):
             st.session_state.no_clicks += 1
 
-    # Follow-up once No shrinks enough
+    # Follow-up once No becomes tiny
     if st.session_state.no_clicks >= 5:
 
         st.markdown("### Are you sure? 🥺")
@@ -148,7 +156,7 @@ if st.session_state.stage == "main":
 # ================= YES SCREEN =================
 elif st.session_state.stage == "yes":
 
-    # Play YAY sound once
+    # Play YAY sound
     st.markdown(
         f"""
         <audio autoplay>
