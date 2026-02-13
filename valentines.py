@@ -4,15 +4,18 @@ import random
 
 st.set_page_config(page_title="For You ❤️", layout="centered")
 
-# ---------- IMAGE LOADER ----------
-def get_base64(img_file):
-    with open(img_file, "rb") as f:
+# ---------- FILE TO BASE64 ----------
+def get_base64(file):
+    with open(file, "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-# ---------- BACKGROUND IMAGE ----------
+# ---------- LOAD FILES FROM ROOT ----------
 bg_img = get_base64("background.jpg")
+bg_music = get_base64("background_music.mp3")
+yay_sound = get_base64("yay_sound.mp3")
 
+# ---------- PAGE STYLE ----------
 page_style = f"""
 <style>
 .stApp {{
@@ -62,8 +65,17 @@ page_style = f"""
 }}
 </style>
 """
-
 st.markdown(page_style, unsafe_allow_html=True)
+
+# ---------- BACKGROUND MUSIC ----------
+st.markdown(
+    f"""
+    <audio autoplay loop>
+        <source src="data:audio/mp3;base64,{bg_music}" type="audio/mp3">
+    </audio>
+    """,
+    unsafe_allow_html=True
+)
 
 # ---------- FLOATING HEARTS ----------
 heart_html = "<div class='hearts'>"
@@ -98,13 +110,12 @@ if st.session_state.stage == "main":
             st.session_state.stage = "yes"
 
     with col2:
-        # Shrink logic
         size = max(22 - st.session_state.no_clicks * 3, 6)
 
         st.markdown(
             f"""
             <style>
-            div[data-testid="stButton"] button[key="no_button"] {{
+            div[data-testid="stButton"] button {{
                 font-size: {size}px !important;
             }}
             </style>
@@ -112,10 +123,10 @@ if st.session_state.stage == "main":
             unsafe_allow_html=True
         )
 
-        if st.button("No 🙈", key="no_button"):
+        if st.button("No 🙈"):
             st.session_state.no_clicks += 1
 
-    # Trigger follow-up when No becomes tiny
+    # Follow-up once No shrinks enough
     if st.session_state.no_clicks >= 5:
 
         st.markdown("### Are you sure? 🥺")
@@ -136,7 +147,19 @@ if st.session_state.stage == "main":
 
 # ================= YES SCREEN =================
 elif st.session_state.stage == "yes":
+
+    # Play YAY sound once
+    st.markdown(
+        f"""
+        <audio autoplay>
+            <source src="data:audio/mp3;base64,{yay_sound}" type="audio/mp3">
+        </audio>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.balloons()
+
     st.markdown("<div style='margin-top:220px;'>", unsafe_allow_html=True)
     st.markdown("<div class='big-text'>I KNEW IT ❤️</div>", unsafe_allow_html=True)
     st.markdown("### See you tomorrow at IGNNA by Midnight Sun, Nungambakkam.")
