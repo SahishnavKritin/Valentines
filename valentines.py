@@ -11,7 +11,7 @@ def get_base64(img_file):
     return base64.b64encode(data).decode()
 
 # ---------- BACKGROUND IMAGE ----------
-bg_img = get_base64("background.jpg")
+bg_img = get_base64("pictures/background.jpg")
 
 page_style = f"""
 <style>
@@ -98,24 +98,24 @@ if st.session_state.stage == "main":
             st.session_state.stage = "yes"
 
     with col2:
-        # Shrink only the No button
-        size = max(22 - st.session_state.no_clicks * 3, 8)
+        # Shrink logic
+        size = max(22 - st.session_state.no_clicks * 3, 6)
 
         st.markdown(
             f"""
             <style>
-            div[data-testid="stButton"] button:contains("No") {{
-                font-size: {size}px;
+            div[data-testid="stButton"] button[key="no_button"] {{
+                font-size: {size}px !important;
             }}
             </style>
             """,
             unsafe_allow_html=True
         )
 
-        if st.button("No 🙈"):
+        if st.button("No 🙈", key="no_button"):
             st.session_state.no_clicks += 1
 
-    # Trigger follow-up when No is tiny
+    # Trigger follow-up when No becomes tiny
     if st.session_state.no_clicks >= 5:
 
         st.markdown("### Are you sure? 🥺")
@@ -139,7 +139,8 @@ elif st.session_state.stage == "yes":
     st.balloons()
     st.markdown("<div style='margin-top:220px;'>", unsafe_allow_html=True)
     st.markdown("<div class='big-text'>I KNEW IT ❤️</div>", unsafe_allow_html=True)
-    st.markdown("### Best decision ever, Babycorn 😌")
+    st.markdown("### See you tomorrow at IGNNA by Midnight Sun, Nungambakkam.")
+    st.markdown("### I'll pick you up at 7PM 😌")
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
