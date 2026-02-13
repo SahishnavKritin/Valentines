@@ -33,7 +33,7 @@ page_bg_img = f"""
 .centered {{
     text-align: center;
     color: white;
-}}
+}} 
 
 .big-text {{
     font-size: 50px;
@@ -82,7 +82,17 @@ if "stage" not in st.session_state:
 st.markdown("<div class='centered'>", unsafe_allow_html=True)
 
 # MAIN QUESTION
+st.markdown("<div class='centered'>", unsafe_allow_html=True)
+
+# MAIN QUESTION
+st.markdown("<div class='centered'>", unsafe_allow_html=True)
+
+# MAIN QUESTION
 if st.session_state.stage == "main":
+
+    # Push question lower
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
+
     st.markdown("<div class='big-text'>Will you be my Valentine? 💘</div>", unsafe_allow_html=True)
     st.write("")
 
@@ -96,20 +106,41 @@ if st.session_state.stage == "main":
         if st.button("No 🙈"):
             st.session_state.stage = "confirm"
 
-# CONFIRMATION IF NO
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# CONFIRMATION FLOW (Appears Below)
 elif st.session_state.stage == "confirm":
-    st.markdown("<div class='big-text'>Are you sure? 🥺</div>", unsafe_allow_html=True)
 
-    if st.button("Yes, I will be your Valentine ❤️"):
-        st.session_state.stage = "yes"
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
 
-    if st.button("No 😜"):
-        st.session_state.stage = "main"
+    st.markdown("<div class='big-text'>Will you be my Valentine? 💘</div>", unsafe_allow_html=True)
+    st.write("")
+    st.button("Yes ❤️", key="yes_again", on_click=lambda: st.session_state.update(stage="yes"))
+
+    st.write("")
+    st.markdown("### Are you sure? 🥺")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("No, I was out of my goddamn mind."):
+            st.session_state.stage = "yes"
+
+    with col2:
+        if st.button("Of course no, I'm so sorry Babycorn."):
+            st.markdown("### So that's a yes? 😏")
+
+            if st.button("Yes"):
+                st.session_state.stage = "yes"
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 # YES SCREEN
 elif st.session_state.stage == "yes":
     st.balloons()
-    st.markdown("<div class='big-text'>YAYYY ❤️</div>", unsafe_allow_html=True)
-    st.image("celebration.jpg", use_column_width=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
+    st.markdown("<div class='big-text'>I KNEW IT ❤️</div>", unsafe_allow_html=True)
+    st.markdown("### Best decision ever, Babycorn 😌")
+    st.markdown("</div>", unsafe_allow_html=True)
