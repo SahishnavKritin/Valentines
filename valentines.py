@@ -10,7 +10,7 @@ def get_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-# ---------- LOAD FILES (ROOT LEVEL) ----------
+# ---------- LOAD FILES ----------
 bg_img = get_base64("background.jpg")
 bg_music = get_base64("background_music.mp3")
 yay_sound = get_base64("yay_sound.mp3")
@@ -36,12 +36,8 @@ page_style = f"""
 }}
 
 @keyframes glow {{
-    from {{
-        text-shadow: 0 0 10px pink, 0 0 20px pink;
-    }}
-    to {{
-        text-shadow: 0 0 20px red, 0 0 30px red;
-    }}
+    from {{ text-shadow: 0 0 10px pink; }}
+    to {{ text-shadow: 0 0 25px red; }}
 }}
 
 .hearts {{
@@ -78,7 +74,7 @@ st.markdown(heart_html, unsafe_allow_html=True)
 
 # ---------- SESSION STATE ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "main"
+    st.session_state.stage = "landing"
 
 if "no_clicks" not in st.session_state:
     st.session_state.no_clicks = 0
@@ -86,27 +82,26 @@ if "no_clicks" not in st.session_state:
 if "music_started" not in st.session_state:
     st.session_state.music_started = False
 
-# ---------- BACKGROUND MUSIC BUTTON ----------
 st.markdown("<div class='centered'>", unsafe_allow_html=True)
 
-if not st.session_state.music_started:
-    if st.button("🎵 Tap to start the vibe"):
-        st.session_state.music_started = True
+# ====================================================
+# LANDING SCREEN
+# ====================================================
+if st.session_state.stage == "landing":
 
-if st.session_state.music_started:
-    st.markdown(
-        f"""
-        <audio autoplay loop>
-            <source src="data:audio/mp3;base64,{bg_music}" type="audio/mp3">
-        </audio>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("<div style='margin-top:250px;'>", unsafe_allow_html=True)
 
-# ================= MAIN SCREEN =================
-if st.session_state.stage == "main":
+    if st.button("Click Here Popoy 💌"):
+        st.session_state.stage = "main"
 
-    st.markdown("<div style='margin-top:220px;'>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ====================================================
+# MAIN QUESTION
+# ====================================================
+elif st.session_state.stage == "main":
+
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
 
     st.markdown("<div class='big-text'>Will you be my Valentine? 💘</div>", unsafe_allow_html=True)
     st.write("")
@@ -118,15 +113,11 @@ if st.session_state.stage == "main":
             st.session_state.stage = "yes"
 
     with col2:
-        size = max(22 - st.session_state.no_clicks * 3, 6)
+        shrink_scale = max(1 - (st.session_state.no_clicks * 0.15), 0.3)
 
         st.markdown(
             f"""
-            <style>
-            div[data-testid="stButton"] button {{
-                font-size: {size}px !important;
-            }}
-            </style>
+            <div style="transform: scale({shrink_scale}); transform-origin: center;">
             """,
             unsafe_allow_html=True
         )
@@ -134,26 +125,48 @@ if st.session_state.stage == "main":
         if st.button("No 🙈"):
             st.session_state.no_clicks += 1
 
-    # Follow-up once No becomes tiny
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # After enough shrinking → show follow-up
     if st.session_state.no_clicks >= 5:
-
-        st.markdown("### Are you sure? 🥺")
-
-        col3, col4 = st.columns(2)
-
-        with col3:
-            if st.button("No, I was out of my goddamn mind."):
-                st.session_state.stage = "yes"
-
-        with col4:
-            if st.button("Of course no, I'm so sorry Babycorn."):
-                st.markdown("### So that's a yes? 😏")
-                if st.button("Yes"):
-                    st.session_state.stage = "yes"
+        st.session_state.stage = "confirm"
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= YES SCREEN =================
+# ====================================================
+# ARE YOU SURE SCREEN
+# ====================================================
+elif st.session_state.stage == "confirm":
+
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
+
+    st.markdown("## Are you sure? 🥺")
+
+    if st.button("No, I was out of my goddamn mind."):
+        st.session_state.stage = "final_confirm"
+
+    if st.button("Of course no, I'm so sorry Babycorn."):
+        st.session_state.stage = "final_confirm"
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ====================================================
+# SO THAT'S A YES?
+# ====================================================
+elif st.session_state.stage == "final_confirm":
+
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
+
+    st.markdown("## So that's a yes? 😏")
+
+    if st.button("Yes ❤️"):
+        st.session_state.stage = "yes"
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ====================================================
+# YES SCREEN
+# ====================================================
 elif st.session_state.stage == "yes":
 
     # Play YAY sound
@@ -166,12 +179,24 @@ elif st.session_state.stage == "yes":
         unsafe_allow_html=True
     )
 
+    # Start background music after first interaction
+    st.markdown(
+        f"""
+        <audio autoplay loop>
+            <source src="data:audio/mp3;base64,{bg_music}" type="audio/mp3">
+        </audio>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.balloons()
 
-    st.markdown("<div style='margin-top:220px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:200px;'>", unsafe_allow_html=True)
+
     st.markdown("<div class='big-text'>I KNEW IT ❤️</div>", unsafe_allow_html=True)
     st.markdown("### See you tomorrow at IGNNA by Midnight Sun, Nungambakkam.")
     st.markdown("### I'll pick you up at 7PM 😌")
+
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
