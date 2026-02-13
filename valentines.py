@@ -11,7 +11,7 @@ def get_base64(img_file):
     return base64.b64encode(data).decode()
 
 # ---------- BACKGROUND IMAGE ----------
-bg_img = get_base64("pictures/background.jpg")
+bg_img = get_base64("background.jpg")
 
 page_style = f"""
 <style>
